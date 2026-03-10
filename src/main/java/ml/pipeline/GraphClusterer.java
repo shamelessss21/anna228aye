@@ -73,12 +73,12 @@ public class GraphClusterer {
     }
 
     private double euclideanDistance(DataPoint a, DataPoint b) {
-        Set<String> unionKeys = new HashSet<>();
-        unionKeys.addAll(a.getFeatures().keySet());
-        unionKeys.addAll(b.getFeatures().keySet());
+        if (!a.getFeatures().keySet().equals(b.getFeatures().keySet())) {
+            throw new IllegalArgumentException("Нельзя сравнить точки с разными наборами признаков");
+        }
 
         double sum = 0.0;
-        for (String key : unionKeys) {
+        for (String key : a.getFeatures().keySet()) {
             double diff = a.getFeature(key) - b.getFeature(key);
             sum += diff * diff;
         }

@@ -25,7 +25,11 @@ public class DataPoint {
     }
 
     public double getFeature(String featureName) {
-        return features.getOrDefault(featureName, 0.0);
+        Double value = features.get(featureName);
+        if (value == null) {
+            throw new IllegalArgumentException("Признак не найден: " + featureName);
+        }
+        return value;
     }
 
     @Override
