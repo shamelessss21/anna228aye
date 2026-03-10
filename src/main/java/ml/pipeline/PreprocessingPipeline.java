@@ -27,6 +27,8 @@ public class PreprocessingPipeline {
                               String anomalyFeature,
                               double zThreshold,
                               double clusteringEpsilon) {
+        featureStore.clear();
+
         for (DataPoint point : data) {
             featureStore.add(point);
         }

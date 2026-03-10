@@ -16,6 +16,11 @@ public class FeatureStore {
     private final Map<String, TreeMap<Double, List<String>>> featureIndex = new HashMap<>();
 
     public void add(DataPoint point) {
+        DataPoint previous = byId.get(point.getId());
+        if (previous != null) {
+            removeFromIndex(previous);
+        }
+
         byId.put(point.getId(), point);
         for (Map.Entry<String, Double> entry : point.getFeatures().entrySet()) {
             featureIndex
@@ -23,6 +28,11 @@ public class FeatureStore {
                     .computeIfAbsent(entry.getValue(), v -> new ArrayList<>())
                     .add(point.getId());
         }
+    }
+
+    public void clear() {
+        byId.clear();
+        featureIndex.clear();
     }
 
     public DataPoint getById(String id) {
@@ -49,5 +59,27 @@ public class FeatureStore {
 
     public List<DataPoint> getAll() {
         return new ArrayList<>(byId.values());
+    }
+
+    private void removeFromIndex(DataPoint point) {
+        for (Map.Entry<String, Double> entry : point.getFeatures().entrySet()) {
+            TreeMap<Double, List<String>> tree = featureIndex.get(entry.getKey());
+            if (tree == null) {
+                continue;
+            }
+
+            List<String> ids = tree.get(entry.getValue());
+            if (ids == null) {
+                continue;
+            }
+
+            ids.remove(point.getId());
+            if (ids.isEmpty()) {
+                tree.remove(entry.getValue());
+            }
+            if (tree.isEmpty()) {
+                featureIndex.remove(entry.getKey());
+            }
+        }
     }
 }
